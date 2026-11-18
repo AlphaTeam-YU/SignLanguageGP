@@ -1,13 +1,16 @@
-import os
 import cv2
 import numpy as np
 import mediapipe as mp
 
 class WordLandmarkExtractor:
 
-    def __init__(self, num_frames=50):
+    def __init__(self, num_frames=50 , model_complexity=1):
         self.num_frames = num_frames
         self.mp_holistic = mp.solutions.holistic
+        self.holistic = self.mp_holistic.Holistic(
+            static_image_mode=False,
+            model_complexity=model_complexity
+        )
 
     def extract_landmarks(self, results):
         pose = np.zeros(33 * 4, dtype=np.float32)
@@ -67,27 +70,25 @@ class WordLandmarkExtractor:
         sequence = []
 
         try:
-            with self.mp_holistic.Holistic(
-                static_image_mode=False,
-                model_complexity=1
-            ) as holistic:
+            for index in indices:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, int(index))
+                success, frame = cap.read()
 
-                for index in indices:
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, int(index))
-                    success, frame = cap.read()
-
-                    if not success:
-                        raise ValueError(
-                            f"Cannot read frame {index}: {video_path}"
-                        )
-
-                    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    results = holistic.process(rgb)
-
-                    sequence.append(
-                        self.extract_landmarks(results)
+                if not success:
+                    raise ValueError(
+                        f"Cannot read frame {index}: {video_path}"
                     )
+
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results = self.holistic.process(rgb)
+
+                sequence.append(
+                    self.extract_landmarks(results)
+                )
         finally:
             cap.release()
 
         return np.array(sequence, dtype=np.float32)
+
+    def close(self):
+        self.holistic.close()
