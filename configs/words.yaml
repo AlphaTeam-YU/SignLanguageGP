@@ -13,8 +13,10 @@ extraction:
 normalization:
   left_shoulder_idx: 11
   right_shoulder_idx: 12
-  visibility_threshold: 0.5
-  aspect_ratio: null
   eps: 1.0e-6
+  use_z_in_scale: false
+  min_visibility: 0.5
+  frame_width: null
+  frame_height: null
   output_x_name: "X_words_norm.npy"
   output_y_name: "y_words.npy"
