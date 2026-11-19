@@ -1,1 +1,18 @@
+data:
+  raw_videos_dir: "/content/drive/MyDrive/Grad_project/words_videos"
+  output_dir: "/content/drive/MyDrive/processed_data/words"
+  num_frames: 50
+  num_features: 378
 
+extraction:
+  model_complexity: 1
+  pose_landmarks: 33
+  face_landmarks: 40
+  hand_landmarks: 21
+
+normalization:
+  left_shoulder_idx: 11
+  right_shoulder_idx: 12
+  eps: 1.0e-6
+  output_x_name: "X_words_norm.npy"
+  output_y_name: "y_words.npy"
