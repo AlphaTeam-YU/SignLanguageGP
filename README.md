@@ -31,8 +31,10 @@ SignLanguageGP/
 │   └── train.py            # Temporal augmentation & training pipeline
 ├── letters/
 │   ├── preprocess.py       # Wrist/scale normalization, joint angles & leak-free split
-│   ├── model.py            # Residual MLP architecture
-│   └── train.py            # Coordinate augmentation, training & confusion matrix
+│   ├── data.py           # tf.data pipeline & train-only coordinate rotation augmentation
+│   ├── model.py          # Residual MLP architecture
+│   ├── train.py          # Coordinate augmentation, training & confusion matrix
+│   └── evaluate.py       # Evaluation script (macro metrics, report & confusion matrix)
 └── app/
     └── live_demo.py        # Real-time webcam app switching between Letters & Words modes
 │   ├── split_data.py       # Video-level 70/15/15 split & Leave-One-Signer-Out (LOSO)
@@ -40,3 +42,8 @@ SignLanguageGP/
 │   └── train.py            # Data augmentation & training pipeline
 └── app/
     └── live_demo.py        # Real-time webcam inference & XAI attention visualization
+## 3. Letters Data Pipeline & Evaluation
+
+- **Data Loading (`letters/data.py`):** Loads pre-processed arrays from `final/` into `tf.data.Dataset` splits (`train`, `val`, `test`) with batch size `64` and `89` features per sample (`(64, 89)`).
+- **Augmentation:** Light coordinate rotation augmentation is applied strictly to the `train` split, leaving `val` and `test` untouched.
+- **Evaluation (`letters/evaluate.py`):** Evaluates `.keras` models on `val` or `test` splits, reporting Accuracy, Macro Precision, Macro Recall, Macro F1-score, per-class classification report, and the confusion matrix.
