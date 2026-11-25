@@ -1,9 +1,15 @@
 import cv2
 import numpy as np
 import mediapipe as mp
+from pathlib import Path
+from types import SimpleNamespace
+import urllib.request
+from mediapipe.tasks import python as mp_python
+from mediapipe.tasks.python import vision
+import yaml
 
 class WordLandmarkExtractor:
-
+    
     def __init__(self, num_frames=50 , model_complexity=1):
         self.num_frames = num_frames
         self.mp_holistic = mp.solutions.holistic
