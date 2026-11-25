@@ -6,10 +6,13 @@ from types import SimpleNamespace
 import urllib.request
 from mediapipe.tasks import python as mp_python
 from mediapipe.tasks.python import vision
-import ymal
+import yaml
 
 class WordLandmarkExtractor:
-    
+    DEFAULT_MODEL_URL = (
+        "https://storage.googleapis.com/mediapipe-models/holistic_landmarker/"
+        "holistic_landmarker/float16/latest/holistic_landmarker.task"
+    )
     def __init__(self,
         config_path: str = "configs/words.yaml",
         num_frames: int | None = None,
@@ -29,9 +32,18 @@ class WordLandmarkExtractor:
         self.num_face = int(ext_cfg.get("face_landmarks", 40))
         self.num_hand = int(ext_cfg.get("hand_landmarks", 21))
 
-        model_path = Path(ext_cfg.get("model_asset_path", model_asset_path)
+        model_path = Path(ext_cfg.get("model_asset_path", model_asset_path))
         model_url = ext_cfg.get("model_url", self.DEFAULT_MODEL_URL)
+        if not model_path.exists():
+            model_path.parent.mkdir(parents=True, exist_ok=True)
+            urllib.request.urlretrieve(model_url, model_path)
+
+        options = vision.HolisticLandmarkerOptions(
+            base_options=mp_python.BaseOptions(model_asset_path=str(model_path)),
+            running_mode=vision.RunningMode.IMAGE,
         )
+        self.landmarker = vision.HolisticLandmarker.create_from_options(options)
+        
 
     @staticmethod
     def _points(landmarks):
@@ -46,7 +58,7 @@ class WordLandmarkExtractor:
 
     def extract_landmarks(self, results):
         pose = np.zeros(self.num_pose * 4, dtype=np.float32)
-        face = np.zeros(self.num_face, dtype=np.float32)
+        face = np.zeros(self.num_face * 3, dtype=np.float32)
         left_hand = np.zeros(self.num_hand * 3, dtype=np.float32)
         right_hand = np.zeros(self.num_hand * 3, dtype=np.float32)
 
