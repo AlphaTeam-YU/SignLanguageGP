@@ -4,7 +4,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from words.extract import WordLandmarkExtractor
 from words.normalize import WordNormalizer
-from sklearn.model_selection import train_test_split
+from words.split_data import split_dataset
 
 DATA_DIR = Path("/content/drive/MyDrive/Sign Language Graduation Project/words/processed_data/unique_videos")
 OUT_DIR = Path("/content/drive/MyDrive/Sign Language Graduation Project/words/processed_data/preprocessed_words")
@@ -59,4 +59,8 @@ print("Classes:", label_to_idx)
 print("Failed count:", len(failed_videos))
 
 #split the data
+X_train, X_val, X_test, y_train, y_val, y_test = split_dataset(X_clean, y_labels, seed=42)
 
+print("Train:", X_train.shape, y_train.shape)
+print("Val:  ", X_val.shape, y_val.shape)
+print("Test: ", X_test.shape, y_test.shape)
