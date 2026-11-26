@@ -59,28 +59,4 @@ print("Classes:", label_to_idx)
 print("Failed count:", len(failed_videos))
 
 #split the data
-data_dir = Path("/content/drive/MyDrive/Sign Language Graduation Project/words/processed_data/preprocessed_words")
 
-x_path = data_dir / "X_clean.npy" if (data_dir / "X_clean.npy").exists() else data_dir / "X_processed.npy"
-X = np.load(x_path)
-y = np.load(data_dir / "y_labels.npy")
-label_map = json.loads((data_dir / "label_map.json").read_text(encoding="utf-8"))
-
-try:
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y, test_size=0.30, random_state=42, stratify=y
-    )
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
-    )
-except ValueError:
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y, test_size=0.30, random_state=42, stratify=None
-    )
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp, test_size=0.50, random_state=42, stratify=None
-    )
-
-print("Train:", X_train.shape, y_train.shape)
-print("Val:  ", X_val.shape, y_val.shape)
-print("Test: ", X_test.shape, y_test.shape)
